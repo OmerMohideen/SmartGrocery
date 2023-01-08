@@ -1,0 +1,75 @@
+<div class="container-fluid main-content">
+  <div class="row">
+    <section
+      [ngClass]="showAddProduct || showEditProduct ? 'col-md-7' : 'col-md-12'"
+    >
+      <div class="product-header">
+        <h1>
+          Product List
+          <span *ngIf="!isLoading" (click)="refresh()" style="cursor: pointer">
+            <i class="fa fa-refresh" aria-hidden="true"></i>
+          </span>
+          <i
+            *ngIf="isLoading"
+            class="fa fa-refresh fa-spin fa-fw"
+            aria-hidden="true"
+          ></i>
+        </h1>
+        <button type="button" class="btn btn-outline-primary" (click)="showAddProducts()">Add Product</button>
+      </div>
+      <table class="table">
+        <thead class="thead-light t-head">
+          <tr>
+            <th scope="col">Product Id</th>
+            <th scope="col">Product Name</th>
+            <th scope="col">Product Description</th>
+            <th scope="col">Created Date</th>
+            <th scope="col">Quantity</th>
+            <th scope="col">Unit Price</th>
+            <th scope="col">Availability</th>
+            <th scope="col">Product Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            *ngFor="let product of products; let i = index"
+            (click)="selectProduct(i, product)"
+            [ngClass]="rowIndex == i ? 'active' : ''"
+          >
+            <td>{{ product.id }}</td>
+            <td>{{ product.productName }}</td>
+            <td>{{ product.description | contentLimiter }}</td>
+            <td>{{ product.createdDate | date: "dd/MM/yyyy" }}</td>
+            <td>{{ product.quantity }}</td>
+            <td>{{ product.unitPrice | currency: "Rs." }}</td>
+            <td>
+              <p *ngIf="product.quantity <= 50">Insufficient Inventory</p>
+              <p *ngIf="product.quantity > 50">Sufficient inventory</p>
+            </td>
+            <td>
+              <button
+                type="button"
+                [disabled]="rowIndex != i"
+                class="btn-xs icon"
+              >
+                <i class="fa fa-eye"></i>
+              </button>
+              <button
+                type="button"
+                [disabled]="rowIndex != i"
+                class="btn-xs icon"
+                (click)="OpenEditProductView()"
+              >
+                <i class="fa fa-pencil-square-o"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+    <section class="col-md-5" *ngIf="showAddProduct || showEditProduct">
+      <app-add-product *ngIf="showAddProduct" (cancelAddView) = "hideAddProducts()" (productAddEvent) ="updateProductList()"></app-add-product>
+      <app-edit-product *ngIf="showEditProduct" [product] = "selectedProduct" (cancelEditView) = closeEditView() (productAddEvent) ="updateProductList()"></app-edit-product>
+    </section>
+  </div>
+</div>
